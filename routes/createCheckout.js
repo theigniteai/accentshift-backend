@@ -6,7 +6,6 @@ dotenv.config();
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Create Stripe Checkout Session
 router.post("/create-checkout-session", async (req, res) => {
   const { plan } = req.body;
 
@@ -19,12 +18,7 @@ router.post("/create-checkout-session", async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: "https://your-frontend.com/success",
       cancel_url: "https://your-frontend.com/cancel",
