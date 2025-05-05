@@ -1,19 +1,23 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import stripeRoutes from "./routes/stripe.js";
 import authRoutes from "./routes/auth.js";
-import checkoutRoutes from "./routes/createCheckout.js"; // or "./routes/checkout.js"
-import stripeWebhookRoutes from "./routes/stripe.js";
+import bodyParser from "body-parser";
 
 dotenv.config();
 const app = express();
+
 app.use(cors());
+
+// Parse raw body for Stripe webhooks before JSON parser
+app.use("/api/stripe/webhook", stripeRoutes);
+
+// Then parse JSON for all other routes
 app.use(express.json());
 
-// Routes
+app.use("/api/stripe", stripeRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/stripe", stripeWebhookRoutes); // for webhook events (e.g., /api/stripe/webhook)
-app.use("/api/checkout", checkoutRoutes);    // for user checkout (e.g., /api/checkout/create-checkout-session)
 
 app.get("/", (req, res) => {
   res.send("AccentShift Backend Running");
